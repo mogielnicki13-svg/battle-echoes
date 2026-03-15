@@ -9,6 +9,7 @@ import {
   Modal, Animated, Dimensions, ScrollView,
 } from 'react-native';
 import { Colors, Radius } from '../constants/theme';
+import { DucatIcon } from './GoldIcon';
 import { useAppStore } from '../store';
 import { hapticMedium, hapticSuccess, hapticError, hapticLight } from '../services/HapticsService';
 
@@ -146,7 +147,10 @@ export default function PaywallModal({ visible, config, onClose, onUnlocked, onG
         <View style={styles.coinsRow}>
           <Text style={styles.coinsLabel}>Twoje dukaty:</Text>
           <View style={styles.coinsChip}>
-            <Text style={styles.coinsChipText}>🪙 {coins.toLocaleString()}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <DucatIcon size={14} />
+              <Text style={styles.coinsChipText}>{coins.toLocaleString()}</Text>
+            </View>
           </View>
         </View>
 
@@ -166,7 +170,7 @@ export default function PaywallModal({ visible, config, onClose, onUnlocked, onG
               activeOpacity={0.8}
             >
               <View style={styles.optionLeft}>
-                <Text style={styles.optionIcon}>🪙</Text>
+                <DucatIcon size={24} />
                 <View>
                   <Text style={[styles.optionTitle, canAfford && { color: config.eraColor }]}>
                     {price.toLocaleString()} Dukatów

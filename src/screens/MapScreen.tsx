@@ -19,7 +19,7 @@ import BATTLE_LOCAL_IMAGES from '../services/BattleLocalImages';
 import { FloatingReward, RewardToast } from '../components/XPSystem';
 import { useFocusEffect } from '@react-navigation/native';
 import { logScreenView } from '../services/AnalyticsService';
-import GoldIcon, { ERA_ICON_DEFS } from '../components/GoldIcon';
+import GoldIcon, { ERA_ICON_DEFS, DucatIcon } from '../components/GoldIcon';
 import CampaignBanner from '../components/CampaignBanner';
 import MapFallbackWeb from '../components/MapFallbackWeb';
 import { useTranslation } from 'react-i18next';
@@ -730,7 +730,7 @@ function VisitModal({ result, visited, onVisit, onClose }: {
             <View style={styles.modalRewards}>
               <Text style={styles.modalRewardsLabel}>{t('map.visit_rewards')}</Text>
               <View style={styles.modalRewardItem}><Text style={{ fontSize: 20 }}>⭐</Text><Text style={styles.modalRewardText}>+{site.xpReward} XP</Text></View>
-              <View style={styles.modalRewardItem}><Text style={{ fontSize: 20 }}>🪙</Text><Text style={styles.modalRewardText}>+{site.coinReward} {t('gps.coins_label')}</Text></View>
+              <View style={styles.modalRewardItem}><DucatIcon size={20} /><Text style={styles.modalRewardText}>+{site.coinReward} {t('gps.coins_label')}</Text></View>
               {artifact && (
                 <View style={[styles.modalRewardItem, styles.modalRewardLegendary]}>
                   <Text style={{ fontSize: 24 }}>{artifact.icon}</Text>

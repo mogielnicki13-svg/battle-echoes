@@ -17,7 +17,7 @@ import { FloatingReward, RewardToast } from '../components/XPSystem';
 import { ALL_ARTIFACTS, RARITY_META } from '../artifacts/data';
 import { useFocusEffect } from '@react-navigation/native';
 import { logScreenView } from '../services/AnalyticsService';
-import { Icon } from '../components/GoldIcon';
+import { Icon, DucatIcon } from '../components/GoldIcon';
 import { useTranslation } from 'react-i18next';
 
 const { width: SW } = Dimensions.get('window');
@@ -510,7 +510,7 @@ function VisitModal({ result, visited, onVisit, onClose }: {
                   <Text style={styles.modalRewardText}>+{site.xpReward} XP</Text>
                 </View>
                 <View style={styles.modalRewardItem}>
-                  <Text style={styles.modalRewardIcon}>🪙</Text>
+                  <DucatIcon size={24} />
                   <Text style={styles.modalRewardText}>+{site.coinReward} {t('gps.coins_label')}</Text>
                 </View>
                 {artifact && (

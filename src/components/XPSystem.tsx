@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Colors, Radius } from '../constants/theme';
 import { hapticSuccess } from '../services/HapticsService';
+import { DucatIcon } from './GoldIcon';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 
@@ -146,7 +147,7 @@ export function CoinCounter({ coins, prevCoins, size = 'small' }: CoinCounterPro
       isLarge && styles.coinCounterLarge,
       { transform: [{ scale: scaleAnim }] },
     ]}>
-      <Text style={[styles.coinIcon, isLarge && styles.coinIconLarge]}>🪙</Text>
+      <DucatIcon size={isLarge ? 20 : 14} />
       <Text style={[styles.coinValue, isLarge && styles.coinValueLarge]}>
         {coins.toLocaleString()}
       </Text>
@@ -243,7 +244,7 @@ export function LevelUpModal({ visible, newLevel, rewards, onClose }: LevelUpMod
           <View style={styles.rewardsBox}>
             {rewards.coins && (
               <View style={styles.rewardRow}>
-                <Text style={styles.rewardIcon}>🪙</Text>
+                <DucatIcon size={20} />
                 <Text style={styles.rewardText}>+{rewards.coins} Dukatów</Text>
               </View>
             )}

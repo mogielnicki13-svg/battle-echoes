@@ -149,7 +149,8 @@ export const UI_ICONS: Record<string, { name: string; lib: IconLib }> = {
   alert:           { name: 'alert',                  lib: 'mci' },
   info:            { name: 'information-outline',    lib: 'mci' },
   // Ekonomia
-  coin:            { name: 'bitcoin',                lib: 'mci' },
+  coin:            { name: 'hand-coin',              lib: 'mci' },
+  coins:           { name: 'circle-multiple',        lib: 'mci' },
   diamond:         { name: 'diamond-stone',          lib: 'mci' },
   gift:            { name: 'gift-open',              lib: 'mci' },
   // Komunikacja / media
@@ -231,6 +232,27 @@ export function QuickActionIcon({
 }) {
   const def = QUICK_ICON_DEFS[id];
   return <GoldIcon name={def.name} lib={def.lib} size={size} color={color} />;
+}
+
+// ── Ducat Icon — spójny symbol waluty ─────────────────────
+// Zastępuje emoji 🪙 we wszystkich komponentach UI.
+// Renderuje jako złota ikona monety z opcjonalnym tłem.
+export function DucatIcon({
+  size = 16, color, style, withBg = false,
+}: {
+  size?: number; color?: string; style?: ViewStyle; withBg?: boolean;
+}) {
+  return (
+    <GoldIcon
+      name="hand-coin"
+      lib="mci"
+      size={size}
+      color={color ?? '#D4A017'}
+      withBackground={withBg}
+      bgColor={withBg ? '#1a1208' : undefined}
+      style={style}
+    />
+  );
 }
 
 // ── Style ─────────────────────────────────────────────────
