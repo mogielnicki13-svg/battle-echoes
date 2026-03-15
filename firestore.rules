@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Bitwy — publiczny odczyt, brak zapisu z klienta
+    match /battles/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Postęp użytkownika — tylko właściciel może czytać/pisać
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Ranking — odczyt publiczny, zapis tylko przez właściciela
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Sesje classroom — odczyt dla uczestników, zapis dla hosta
+    match /sessions/{sessionId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+      match /participants/{participantId} {
+        allow read: if true;
+        allow write: if request.auth != null;
+      }
+    }
+
+    // Domyślnie: blokuj wszystko
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

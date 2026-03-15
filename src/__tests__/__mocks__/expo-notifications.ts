@@ -1,0 +1,11 @@
+export const getPermissionsAsync = jest.fn(() => Promise.resolve({ status: 'granted' }));
+export const requestPermissionsAsync = jest.fn(() => Promise.resolve({ status: 'granted' }));
+export const scheduleNotificationAsync = jest.fn(() => Promise.resolve('id'));
+export const cancelScheduledNotificationAsync = jest.fn(() => Promise.resolve());
+export const cancelAllScheduledNotificationsAsync = jest.fn(() => Promise.resolve());
+export const setNotificationHandler = jest.fn();
+export const addNotificationReceivedListener = jest.fn();
+export const addNotificationResponseReceivedListener = jest.fn();
+export const getExpoPushTokenAsync = jest.fn(() => Promise.resolve({ data: 'token' }));
+export const AndroidImportance = { MAX: 5, HIGH: 4, DEFAULT: 3, LOW: 2, MIN: 1 };
+export const setNotificationChannelAsync = jest.fn(() => Promise.resolve());

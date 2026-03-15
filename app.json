@@ -1,0 +1,69 @@
+{
+  "expo": {
+    "name": "battle-echoes",
+    "slug": "battle-echoes",
+    "version": "1.0.0",
+    "scheme": "battle-echoes",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "description": "Stój tam, gdzie historia się działa. Odkrywaj pola bitew, słuchaj narracji i zbieraj artefakty.",
+    "primaryColor": "#C9A84C",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#080808"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "usesAppleSignIn": true,
+      "bundleIdentifier": "com.battleechoes.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Battle Echoes używa Twojej lokalizacji do wyświetlania pobliskich pól bitewnych i odblokowywania artefaktów GPS.",
+        "NSLocationAlwaysUsageDescription": "Battle Echoes używa Twojej lokalizacji do wyświetlania pobliskich pól bitewnych i odblokowywania artefaktów GPS.",
+        "NSMicrophoneUsageDescription": "Battle Echoes nie wymaga dostępu do mikrofonu."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.battleechoes.app",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "INTERNET"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "Battle Echoes",
+      "shortName": "Battle Echoes",
+      "description": "Stój tam, gdzie historia się działa. Odkrywaj pola bitew, słuchaj narracji i zbieraj artefakty.",
+      "themeColor": "#080808",
+      "backgroundColor": "#080808",
+      "lang": "pl"
+    },
+    "plugins": [
+      "expo-apple-authentication",
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon":  "./assets/icon.png",
+          "color": "#C9A84C",
+          "sounds": []
+        }
+      ],
+      "react-native-purchases"
+    ]
+  }
+}
