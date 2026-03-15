@@ -292,6 +292,7 @@ const en: TranslationKeys = {
     purchase_success:    'Purchased!',
     quartermaster:       'Quartermaster',
     rarity_label:        'Rarity',
+    tab_avatars:         'Avatars',
     tab_coins:           'Coins',
     tab_eras:            'Eras',
     tab_items:           'Items',
@@ -789,6 +790,28 @@ const en: TranslationKeys = {
     no_coins_title:      'Not enough coins',
     no_coins_msg:        'You need {{price}} to purchase campaign "{{name}}".\nCurrent balance: {{balance}}',
     campaign_reason:     'Campaign: {{name}}',
+  },
+
+  // ── Avatars ────────────────────────────────────────────────
+  avatars: {
+    title:             'Avatars',
+    subtitle:          'Portraits of legendary commanders',
+    select:            'Select',
+    selected:          'Selected',
+    purchase:          'Buy for {{price}}',
+    purchase_reason:   'Avatar: {{name}}',
+    owned:             'Owned',
+    locked:            'Locked',
+    earn_hint:         'Listen to the battle to unlock',
+    need_coins:        'You need {{price}} to buy avatar "{{name}}".',
+    change_avatar:     'Change avatar',
+    common:            'Common',
+    rare:              'Rare',
+    legendary:         'Legendary',
+    default_title:     'Beginner recruit',
+    purchased_title:   'Avatar unlocked: {{name}}',
+    purchased_desc:    'Your new commander is ready for battle!',
+    earn_alert:        'To unlock the avatar "{{name}}", complete the associated battle.',
   },
 
   // ── Common ──────────────────────────────────────────────────

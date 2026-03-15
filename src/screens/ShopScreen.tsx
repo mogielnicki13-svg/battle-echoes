@@ -6,7 +6,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ScrollView, Animated, Modal, Dimensions,
+  ScrollView, Animated, Modal, Dimensions, Alert,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { logScreenView } from '../services/AnalyticsService';
@@ -20,6 +20,8 @@ import type { Rarity } from '../artifacts/data';
 import GoldIcon, { Icon, EraIcon } from '../components/GoldIcon';
 import purchaseService, { PRODUCT_IDS } from '../services/PurchaseService';
 import { useTranslation } from 'react-i18next';
+import AvatarDisplay from '../components/AvatarDisplay';
+import { AVATARS, getAvatar, AVATAR_RARITY_COLORS, type Avatar, type AvatarRarity } from '../avatars/data';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 
@@ -59,7 +61,7 @@ interface ShopItem {
   rarity?:     Rarity;
 }
 
-type TabId = 'eras' | 'items' | 'coins';
+type TabId = 'eras' | 'items' | 'coins' | 'avatars';
 
 // ════════════════════════════════════════════════════════════
 // DANE SKLEPU
@@ -229,7 +231,7 @@ function GoldBurst({ visible, onDone }: { visible: boolean; onDone: () => void }
 // ════════════════════════════════════════════════════════════
 export default function ShopScreen() {
   const { t } = useTranslation();
-  const { user, awardCoins, awardXP, unlockEra, unlockArtifact, unlockAllEras, hasAllEras } = useAppStore();
+  const { user, awardCoins, awardXP, unlockEra, unlockArtifact, unlockAllEras, hasAllEras, selectAvatar, purchaseAvatar, ownsAvatar } = useAppStore();
   useFocusEffect(useCallback(() => { logScreenView('Shop'); }, []));
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
@@ -419,7 +421,7 @@ export default function ShopScreen() {
 
       {/* ── Zakładki ─────────────────────────────────────── */}
       <View style={styles.tabs}>
-        {(['eras', 'items', 'coins'] as TabId[]).map(tab => (
+        {(['eras', 'items', 'coins', 'avatars'] as TabId[]).map(tab => (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.tabActive]}
@@ -429,8 +431,9 @@ export default function ShopScreen() {
               {tab === 'eras' && <Icon id="sword" size={13} color={activeTab === tab ? Colors.gold : Colors.textMuted} />}
               {tab === 'items' && <Icon id="artifact" size={13} color={activeTab === tab ? Colors.gold : Colors.textMuted} />}
               {tab === 'coins' && <Icon id="coin" size={13} color={activeTab === tab ? Colors.gold : Colors.textMuted} />}
+              {tab === 'avatars' && <GoldIcon name="account-group" size={13} color={activeTab === tab ? Colors.gold : Colors.textMuted} />}
               <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-                {tab === 'eras' ? t('shop.tab_eras') : tab === 'items' ? t('shop.tab_items') : t('shop.tab_coins')}
+                {tab === 'eras' ? t('shop.tab_eras') : tab === 'items' ? t('shop.tab_items') : tab === 'coins' ? t('shop.tab_coins') : t('shop.tab_avatars')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -640,6 +643,55 @@ export default function ShopScreen() {
                   {t('shop.policy_text')}
                 </Text>
               </View>
+            </View>
+          </>
+        )}
+
+        {/* ══════════════════════════════════════════════
+            ZAKŁADKA: AWATARY
+        ══════════════════════════════════════════════ */}
+        {activeTab === 'avatars' && (
+          <>
+            <Text style={styles.sectionHint}>
+              {t('avatars.subtitle')}
+            </Text>
+
+            <View style={avatarStyles.grid}>
+              {AVATARS.map(avatar => {
+                const owned = ownsAvatar(avatar.id);
+                const selected = (user?.avatarId ?? 'default_soldier') === avatar.id;
+                return (
+                  <AvatarCard
+                    key={avatar.id}
+                    avatar={avatar}
+                    owned={owned}
+                    selected={selected}
+                    onPress={() => {
+                      if (selected) return;
+                      if (owned) {
+                        selectAvatar(avatar.id);
+                        showToast('🎖', avatar.name, t('avatars.selected'), Colors.gold);
+                        return;
+                      }
+                      if (avatar.unlockSource === 'purchase') {
+                        const events = purchaseAvatar(avatar.id);
+                        if (events.length > 0) {
+                          setBurstVisible(true);
+                          showFloating(`🎖 ${avatar.name}`, AVATAR_RARITY_COLORS[avatar.rarity]);
+                          showToast('🎖', t('avatars.purchased_title', { name: avatar.name }),
+                            t('avatars.purchased_desc'), AVATAR_RARITY_COLORS[avatar.rarity]);
+                        }
+                        return;
+                      }
+                      // Earned from battle — show hint
+                      Alert.alert(
+                        avatar.name,
+                        t('avatars.earn_alert', { name: avatar.name }),
+                      );
+                    }}
+                  />
+                );
+              })}
             </View>
           </>
         )}
@@ -885,6 +937,56 @@ function CoinPackCard({ pack, onPress }: { pack: CoinPack; onPress: () => void }
         <Text style={styles.packPrice}>{pack.price}</Text>
       </TouchableOpacity>
     </Animated.View>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// KARTA AWATARA — siatka 2-kolumnowa
+// ════════════════════════════════════════════════════════════
+function AvatarCard({ avatar, owned, selected, onPress }: {
+  avatar: Avatar; owned: boolean; selected: boolean; onPress: () => void;
+}) {
+  const { t } = useTranslation();
+  const rarityColor = AVATAR_RARITY_COLORS[avatar.rarity];
+  const canBuy = avatar.unlockSource === 'purchase';
+  const isFree = avatar.unlockSource === 'default';
+  const earnedFromBattle = !canBuy && !isFree;
+
+  return (
+    <TouchableOpacity
+      style={[
+        avatarStyles.card,
+        selected && { borderColor: rarityColor, borderWidth: 2 },
+      ]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <AvatarDisplay avatarId={avatar.id} size={56} />
+      <Text style={avatarStyles.name} numberOfLines={1}>{avatar.name}</Text>
+      <Text style={[avatarStyles.title, { color: rarityColor }]}>{avatar.title}</Text>
+      <View style={[avatarStyles.rarityBadge, { backgroundColor: rarityColor + '20', borderColor: rarityColor + '40' }]}>
+        <Text style={[avatarStyles.rarityText, { color: rarityColor }]}>
+          {t(`avatars.${avatar.rarity}` as any)}
+        </Text>
+      </View>
+      {selected ? (
+        <View style={[avatarStyles.statusBadge, { backgroundColor: '#4ade80' + '30' }]}>
+          <Text style={[avatarStyles.statusText, { color: '#4ade80' }]}>{'\u2713'} {t('avatars.selected')}</Text>
+        </View>
+      ) : owned ? (
+        <TouchableOpacity style={[avatarStyles.actionBtn, { backgroundColor: Colors.gold }]} onPress={onPress}>
+          <Text style={avatarStyles.actionBtnText}>{t('avatars.select')}</Text>
+        </TouchableOpacity>
+      ) : canBuy ? (
+        <TouchableOpacity style={[avatarStyles.actionBtn, { backgroundColor: rarityColor }]} onPress={onPress}>
+          <Text style={avatarStyles.actionBtnText}>{t('avatars.purchase', { price: avatar.price })}</Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={[avatarStyles.statusBadge, { backgroundColor: '#333' }]}>
+          <Text style={[avatarStyles.statusText, { color: Colors.textMuted }]}>{t('avatars.earn_hint')}</Text>
+        </View>
+      )}
+    </TouchableOpacity>
   );
 }
 
@@ -1238,4 +1340,72 @@ const bundleStyles = StyleSheet.create({
   },
   buyBtnDisabled: { backgroundColor: C.backgroundElevated },
   buyBtnText:     { fontSize: 14, color: '#000', fontWeight: '800' },
+});
+
+// ── Avatar styles ─────────────────────────────────────────
+const avatarStyles = StyleSheet.create({
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    paddingHorizontal: 0,
+    paddingBottom: 20,
+  },
+  card: {
+    width: '47%' as any,
+    backgroundColor: C.backgroundCard,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: C.borderDefault,
+    padding: 12,
+    alignItems: 'center',
+    gap: 6,
+  },
+  name: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: C.textPrimary,
+    textAlign: 'center',
+  },
+  title: {
+    fontSize: 10,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  rarityBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderWidth: 1,
+  },
+  rarityText: {
+    fontSize: 9,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  statusBadge: {
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginTop: 4,
+    width: '100%',
+    alignItems: 'center',
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  actionBtn: {
+    borderRadius: 8,
+    paddingVertical: 6,
+    marginTop: 4,
+    width: '100%',
+    alignItems: 'center',
+  },
+  actionBtnText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#000',
+  },
 });

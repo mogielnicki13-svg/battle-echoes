@@ -291,6 +291,7 @@ const pl = {
     purchase_success:    'Zakupiono!',
     quartermaster:       'Kwatermistrz',
     rarity_label:        'Rzadkość',
+    tab_avatars:         'Awatary',
     tab_coins:           'Dukaty',
     tab_eras:            'Epoki',
     tab_items:           'Przedmioty',
@@ -788,6 +789,28 @@ const pl = {
     no_coins_title:      'Brak dukatów',
     no_coins_msg:        'Potrzebujesz {{price}} aby zakupić kampanię "{{name}}".\nAktualne saldo: {{balance}}',
     campaign_reason:     'Kampania: {{name}}',
+  },
+
+  // ── Avatary ────────────────────────────────────────────────
+  avatars: {
+    title:             'Awatary',
+    subtitle:          'Portrety legendarnych dowódców',
+    select:            'Wybierz',
+    selected:          'Wybrany',
+    purchase:          'Kup za {{price}}',
+    purchase_reason:   'Awatar: {{name}}',
+    owned:             'Posiadany',
+    locked:            'Zablokowany',
+    earn_hint:         'Odsłuchaj bitwę aby odblokować',
+    need_coins:        'Potrzebujesz {{price}} aby kupić awatar "{{name}}".',
+    change_avatar:     'Zmień awatar',
+    common:            'Zwykły',
+    rare:              'Rzadki',
+    legendary:         'Legendarny',
+    default_title:     'Początkujący rekrut',
+    purchased_title:   'Awatar odblokowany: {{name}}',
+    purchased_desc:    'Twój nowy dowódca jest gotowy do boju!',
+    earn_alert:        'Aby odblokować awatar "{{name}}", ukończ powiązaną bitwę.',
   },
 
   // ── Ogólne ──────────────────────────────────────────────────

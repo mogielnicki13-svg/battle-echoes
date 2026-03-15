@@ -15,6 +15,7 @@ import DailyRewardModal from '../components/DailyRewardModal';
 import { useFocusEffect } from '@react-navigation/native';
 import { logScreenView } from '../services/AnalyticsService';
 import { Icon } from '../components/GoldIcon';
+import AvatarDisplay from '../components/AvatarDisplay';
 import LanguageSelector from '../components/LanguageSelector';
 import AccessibilitySettingsCard from '../components/AccessibilitySettings';
 import { useTranslation } from 'react-i18next';
@@ -113,10 +114,13 @@ export default function ProfileScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Avatar */}
         <View style={styles.profileTop}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{user?.name?.charAt(0) || '?'}</Text>
-          </View>
+          <TouchableOpacity onPress={() => navigation.navigate('Shop' as any)}>
+            <AvatarDisplay avatarId={user?.avatarId ?? 'default_soldier'} size={80} />
+          </TouchableOpacity>
           <Text style={styles.profileName}>{user?.name || t('profile.guest')}</Text>
+          <Text style={{ fontSize: 11, color: Colors.textMuted, marginTop: 2 }}>
+            {t('avatars.change_avatar')}
+          </Text>
           <View style={styles.providerTag}>
             <View style={styles.providerTagInner}>
               {user?.provider === 'google' ? (

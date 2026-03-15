@@ -80,6 +80,10 @@ export interface User {
   hasCompletedFirstBattle?: boolean; // first narration finished
   promoteDismissed?: boolean;      // user dismissed Commander promo
   ownedCampaigns?: string[];       // ID zakupionych pakietów kampanii
+
+  // ── Avatar ──────────────────────────────────────────────
+  avatarId?: string;               // currently selected avatar
+  ownedAvatars?: string[];         // IDs of purchased/earned avatars
 }
 
 export interface Battle {
@@ -142,6 +146,11 @@ interface AppStore {
   getRecruitPackSecondsLeft: () => number;
   dismissCommanderPromotion: () => void;
   promoteGuestToAuth: (profile: { id: string; name: string; email: string; provider: 'google' | 'apple' }) => Promise<void>;
+
+  // ── Avatar ──────────────────────────────────────────────
+  selectAvatar:   (avatarId: string) => void;
+  purchaseAvatar: (avatarId: string) => RewardEvent[];
+  ownsAvatar:     (avatarId: string) => boolean;
 }
 
 export const MOCK_BATTLES: Battle[] = [
@@ -849,6 +858,51 @@ export const useAppStore = create<AppStore>((set, get) => ({
     await get().saveToStorage();
   },
 
+  // ── Avatar actions ─────────────────────────────────────
+  selectAvatar: (avatarId) => {
+    set(s => ({ user: s.user ? { ...s.user, avatarId } : null }));
+    get().saveToStorage().catch(e => console.warn('[Store] Save failed:', e));
+  },
+
+  purchaseAvatar: (avatarId) => {
+    const { user } = get();
+    if (!user) return [];
+    const { getAvatar } = require('../avatars/data');
+    const avatar = getAvatar(avatarId);
+    if (!avatar || avatar.price <= 0) return [];
+
+    // Already owned?
+    if ((user.ownedAvatars ?? []).includes(avatarId)) return [];
+
+    // Can afford?
+    if (user.coins < avatar.price) {
+      Alert.alert(
+        i18next.t('store_extra.no_coins_title'),
+        i18next.t('avatars.need_coins', { price: avatar.price, name: avatar.name }),
+        [{ text: i18next.t('common.ok') }],
+      );
+      return [];
+    }
+
+    const events = get().awardCoins(-avatar.price, i18next.t('avatars.purchase_reason', { name: avatar.name }));
+    set(s => ({
+      user: s.user ? {
+        ...s.user,
+        ownedAvatars: [...(s.user.ownedAvatars ?? []), avatarId],
+        avatarId,
+      } : null,
+    }));
+    get().saveToStorage().catch(e => console.warn('[Store] Save failed:', e));
+    return events;
+  },
+
+  ownsAvatar: (avatarId) => {
+    const { user } = get();
+    if (!user) return false;
+    if (avatarId === 'default_soldier') return true;
+    return (user.ownedAvatars ?? []).includes(avatarId);
+  },
+
   loadFromStorage: async () => {
     // ── Wczytaj użytkownika z AsyncStorage ────────────
     try {
@@ -860,6 +914,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
         if (!parsed.completedQuizzes)     parsed.completedQuizzes = [];
         if (!parsed.seenAchievementIds)   parsed.seenAchievementIds = [];
         if (!parsed.ownedCampaigns)       parsed.ownedCampaigns = [];       // migracja: nowe pole
+        if (!parsed.ownedAvatars)         parsed.ownedAvatars = [];         // migracja: avatary
+        if (!parsed.avatarId)             parsed.avatarId = 'default_soldier';
         if (parsed.hasCompletedFirstBattle === undefined) parsed.hasCompletedFirstBattle = false;
         if (parsed.promoteDismissed        === undefined) parsed.promoteDismissed = false;
         set({ user: parsed });
