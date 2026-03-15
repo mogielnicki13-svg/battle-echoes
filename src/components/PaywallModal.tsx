@@ -8,6 +8,7 @@ import {
   View, Text, StyleSheet, TouchableOpacity,
   Modal, Animated, Dimensions, ScrollView,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius } from '../constants/theme';
 import { DucatIcon } from './GoldIcon';
 import { useAppStore } from '../store';
@@ -43,6 +44,7 @@ const ERA_PRICE    = 600;
 // ════════════════════════════════════════════════════════════
 export default function PaywallModal({ visible, config, onClose, onUnlocked, onGoToShop }: Props) {
   const { user, awardCoins, unlockBattle, unlockEra } = useAppStore();
+  const { t } = useTranslation();
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const sheetY          = useRef(new Animated.Value(SH)).current;
@@ -86,7 +88,7 @@ export default function PaywallModal({ visible, config, onClose, onUnlocked, onG
       return;
     }
 
-    awardCoins(-price, `Odblokowanie: ${config.name}`);
+    awardCoins(-price, t('paywall.unlock_reason', { name: config.name }));
 
     if (config.type === 'battle') {
       unlockBattle(config.id);
@@ -135,7 +137,7 @@ export default function PaywallModal({ visible, config, onClose, onUnlocked, onG
         </View>
 
         <Text style={styles.title}>
-          {config.type === 'battle' ? 'Odblokuj bitwę' : 'Odblokuj epokę'}
+          {config.type === 'battle' ? t('paywall.unlock_battle') : t('paywall.unlock_era')}
         </Text>
         <Text style={[styles.battleName, { color: config.eraColor }]}>{config.name}</Text>
 
@@ -145,7 +147,7 @@ export default function PaywallModal({ visible, config, onClose, onUnlocked, onG
 
         {/* Zasoby */}
         <View style={styles.coinsRow}>
-          <Text style={styles.coinsLabel}>Twoje dukaty:</Text>
+          <Text style={styles.coinsLabel}>{t('paywall.your_coins')}</Text>
           <View style={styles.coinsChip}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <DucatIcon size={14} />
@@ -173,12 +175,12 @@ export default function PaywallModal({ visible, config, onClose, onUnlocked, onG
                 <DucatIcon size={24} />
                 <View>
                   <Text style={[styles.optionTitle, canAfford && { color: config.eraColor }]}>
-                    {price.toLocaleString()} Dukatów
+                    {t('paywall.coins_price', { price: price.toLocaleString() })}
                   </Text>
                   <Text style={styles.optionSub}>
                     {canAfford
-                      ? `Pozostanie: ${(coins - price).toLocaleString()} 🪙`
-                      : `Brakuje: ${(price - coins).toLocaleString()} 🪙`
+                      ? t('paywall.remaining', { amount: (coins - price).toLocaleString() })
+                      : t('paywall.missing', { amount: (price - coins).toLocaleString() })
                     }
                   </Text>
                 </View>
@@ -200,8 +202,8 @@ export default function PaywallModal({ visible, config, onClose, onUnlocked, onG
           >
             <Text style={styles.shopBtnIcon}>🛒</Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.shopBtnTitle}>Zdobądź więcej Dukatów</Text>
-              <Text style={styles.shopBtnSub}>Sklep · Paczki monet · Nagrody</Text>
+              <Text style={styles.shopBtnTitle}>{t('paywall.get_more_coins')}</Text>
+              <Text style={styles.shopBtnSub}>{t('paywall.shop_sub')}</Text>
             </View>
             <Text style={styles.shopBtnArrow}>›</Text>
           </TouchableOpacity>
@@ -213,17 +215,17 @@ export default function PaywallModal({ visible, config, onClose, onUnlocked, onG
             activeOpacity={0.8}
           >
             <View style={styles.premiumBadge}>
-              <Text style={styles.premiumBadgeText}>✨ BEST VALUE</Text>
+              <Text style={styles.premiumBadgeText}>✨ {t('paywall.best_value')}</Text>
             </View>
-            <Text style={styles.premiumTitle}>Pakiet Wszystkich Epok</Text>
-            <Text style={styles.premiumSub}>Odblokuj WSZYSTKIE bitwy jednorazowo · 1 500 🪙</Text>
+            <Text style={styles.premiumTitle}>{t('paywall.all_eras_pack')}</Text>
+            <Text style={styles.premiumSub}>{t('paywall.all_eras_desc')}</Text>
           </TouchableOpacity>
 
         </View>
 
         {/* Zamknij */}
         <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-          <Text style={styles.closeBtnText}>Może później</Text>
+          <Text style={styles.closeBtnText}>{t('paywall.maybe_later')}</Text>
         </TouchableOpacity>
 
         <View style={{ height: 12 }} />

@@ -22,15 +22,17 @@ import React, { useRef, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Animated, Easing,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius } from '../constants/theme';
 import { useRecruitPackTimer } from '../hooks/useRecruitPackTimer';
+import { DucatIcon } from './GoldIcon';
 
 // ── Pack contents ──────────────────────────────────────────
 const PACK_ITEMS = [
-  { icon: '🗺️', text: 'Dostęp do epoki: Starożytność (bezpłatna)' },
-  { icon: '⚔️', text: '3 bitwy odblokowane na 7 dni' },
-  { icon: '🪙', text: '+200 Dukatów startowych' },
-  { icon: '📜', text: '2 ekskluzywne Artefakty Rekruta' },
+  { icon: '🗺️', textKey: 'recruit.item_era_access' },
+  { icon: '⚔️', textKey: 'recruit.item_battles' },
+  { icon: 'coin', textKey: 'recruit.item_coins' },
+  { icon: '📜', textKey: 'recruit.item_artifacts' },
 ];
 
 // ── Props ──────────────────────────────────────────────────
@@ -42,6 +44,7 @@ interface Props {
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 export default function RecruitPackCard({ onClaim }: Props) {
+  const { t } = useTranslation();
   const { active, label, hoursLeft } = useRecruitPackTimer();
 
   // Pulse animation on the countdown timer when < 2 hours left
@@ -72,14 +75,14 @@ export default function RecruitPackCard({ onClaim }: Props) {
       <View style={s.header}>
         <View style={s.badgeRow}>
           <View style={s.badge}>
-            <Text style={s.badgeText}>OGRANICZONA OFERTA</Text>
+            <Text style={s.badgeText}>{t('recruit.limited_offer')}</Text>
           </View>
-          <Text style={s.headerTitle}>Pakiet Rekruta</Text>
+          <Text style={s.headerTitle}>{t('recruit.pack_title')}</Text>
         </View>
 
         {/* Countdown */}
         <View style={s.countdownBox}>
-          <Text style={s.countdownLabel}>Pozostało</Text>
+          <Text style={s.countdownLabel}>{t('recruit.time_left')}</Text>
           <Animated.Text
             style={[
               s.countdownText,
@@ -99,20 +102,24 @@ export default function RecruitPackCard({ onClaim }: Props) {
       <View style={s.itemList}>
         {PACK_ITEMS.map((item, i) => (
           <View key={i} style={s.itemRow}>
-            <Text style={s.itemIcon}>{item.icon}</Text>
-            <Text style={s.itemText}>{item.text}</Text>
+            {item.icon === 'coin' ? (
+              <View style={s.itemIconWrap}><DucatIcon size={18} /></View>
+            ) : (
+              <Text style={s.itemIcon}>{item.icon}</Text>
+            )}
+            <Text style={s.itemText}>{t(item.textKey)}</Text>
           </View>
         ))}
       </View>
 
       {/* CTA */}
       <TouchableOpacity style={s.claimBtn} onPress={onClaim} activeOpacity={0.85}>
-        <Text style={s.claimBtnText}>Odbierz Pakiet Rekruta →</Text>
+        <Text style={s.claimBtnText}>{t('recruit.claim_btn')}</Text>
       </TouchableOpacity>
 
       {/* Fine print */}
       <Text style={s.finePrint}>
-        Oferta dostępna przez 48h od pierwszego uruchomienia. Nie wymaga zakupu.
+        {t('recruit.fine_print')}
       </Text>
     </View>
   );
@@ -209,6 +216,11 @@ const s = StyleSheet.create({
     fontSize: 18,
     width: 26,
     textAlign: 'center',
+  },
+  itemIconWrap: {
+    width: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   itemText: {
     flex: 1,

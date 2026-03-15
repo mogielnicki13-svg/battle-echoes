@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { EraId, Colors, ERA_THEMES } from '../constants/theme';
 import * as WebBrowser from 'expo-web-browser';
+import i18next from 'i18next';
 import {
   getBattles,
   getUserProgress,
@@ -516,7 +517,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const { user } = get();
     if (!user) return [];
     const event: RewardEvent = { id: uid(), type: 'coins', amount,
-      label: `+${amount} Dukatów`, icon: '🪙', color: '#D4A017' };
+      label: `+${amount}`, icon: 'coin', color: '#D4A017' };
     set(s => ({ user: s.user ? { ...s.user, coins: Math.max(0, s.user.coins + amount) } : null,
       pendingRewards: [...s.pendingRewards, event] }));
     get().saveToStorage().catch(e => console.warn('[Store] Save failed:', e));
@@ -768,9 +769,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
     // Sprawdź saldo
     if (user.coins < campaign.price) {
       Alert.alert(
-        'Brak dukatów',
-        `Potrzebujesz ${campaign.price} 🪙 aby zakupić kampanię "${campaign.name}".\nAktualne saldo: ${user.coins} 🪙`,
-        [{ text: 'OK' }],
+        i18next.t('store_extra.no_coins_title'),
+        i18next.t('store_extra.no_coins_msg', { price: campaign.price, name: campaign.name, balance: user.coins }),
+        [{ text: i18next.t('common.ok') }],
       );
       return [];
     }

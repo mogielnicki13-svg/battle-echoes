@@ -8,7 +8,9 @@ import React, { useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Animated,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import GoldIcon from './GoldIcon';
+import { DucatIcon } from './GoldIcon';
 import { type Campaign, campaignSavePercent } from '../campaigns/data';
 import { Colors } from '../constants/theme';
 
@@ -53,6 +55,7 @@ export default function CampaignBanner({
 function FullCampaignBanner({
   campaign, userCoins, battleName, onPurchase, onDismiss,
 }: Omit<CampaignBannerProps, 'compact'>) {
+  const { t } = useTranslation();
   const slideAnim = useRef(new Animated.Value(40)).current;
   const fadeAnim  = useRef(new Animated.Value(0)).current;
 
@@ -85,7 +88,7 @@ function FullCampaignBanner({
           <GoldIcon name={campaign.badgeIcon} size={22} color={color} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.packLabel}>PAKIET KAMPANII</Text>
+          <Text style={styles.packLabel}>{t('campaign.pack_label')}</Text>
           <Text style={[styles.campaignName, { color }]}>{campaign.name}</Text>
           <Text style={styles.tagline}>{campaign.tagline}</Text>
         </View>
@@ -95,18 +98,17 @@ function FullCampaignBanner({
       <View style={[styles.contextRow, { borderLeftColor: color }]}>
         <GoldIcon name="information" size={14} color={color} />
         <Text style={styles.contextText}>
-          <Text style={{ color: Colors.textPrimary, fontWeight: '600' }}>{battleName}</Text>
-          {' '}należy do tego pakietu — odblokuj wszystkie {campaign.battleIds.length} bitwy razem.
+          {t('campaign.belongs_to_pack', { name: battleName, count: campaign.battleIds.length })}
         </Text>
       </View>
 
       {/* Statystyki pakietu */}
       <View style={styles.statsRow}>
-        <StatPill icon="sword-cross" label={`${campaign.battleIds.length} bitwy`} color={color} />
+        <StatPill icon="sword-cross" label={t('campaign.battles_count', { count: campaign.battleIds.length })} color={color} />
         {savePercent > 0 && (
-          <StatPill icon="tag" label={`Oszczędzasz ${savePercent}%`} color="#4ade80" />
+          <StatPill icon="tag" label={t('campaign.save_percent', { pct: savePercent })} color="#4ade80" />
         )}
-        <StatPill icon="coins" label={`${campaign.price} 🪙`} color={Colors.gold} />
+        <StatPill icon="coins" label={`${campaign.price}`} color={Colors.gold} />
       </View>
 
       {/* CTA */}
@@ -127,11 +129,11 @@ function FullCampaignBanner({
         />
         {canAfford ? (
           <Text style={[styles.ctaText, { color: '#000' }]}>
-            Odblokuj kampanię za {campaign.price} 🪙
+            {t('campaign.unlock_campaign', { price: campaign.price })}
           </Text>
         ) : (
           <Text style={[styles.ctaText, { color: '#666' }]}>
-            Brakuje Ci {campaign.price - userCoins} 🪙 — zdobądź w Sklepie
+            {t('campaign.missing_coins', { amount: campaign.price - userCoins })}
           </Text>
         )}
       </TouchableOpacity>
@@ -139,7 +141,7 @@ function FullCampaignBanner({
       {/* Cena przekreślona */}
       {campaign.originalPrice && (
         <Text style={styles.originalPrice}>
-          zamiast {campaign.originalPrice} 🪙 za {campaign.battleIds.length} pojedynczo
+          {t('campaign.original_price', { price: campaign.originalPrice, count: campaign.battleIds.length })}
         </Text>
       )}
     </Animated.View>
@@ -150,6 +152,7 @@ function FullCampaignBanner({
 function CompactCampaignBanner({ campaign, userCoins, onPurchase }: {
   campaign: Campaign; userCoins: number; onPurchase: () => void;
 }) {
+  const { t } = useTranslation();
   const canAfford   = userCoins >= campaign.price;
   const savePercent = campaignSavePercent(campaign);
   const color       = campaign.accentColor;
@@ -162,20 +165,20 @@ function CompactCampaignBanner({ campaign, userCoins, onPurchase }: {
           <GoldIcon name={campaign.badgeIcon} size={16} color={color} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.compactLabel}>PAKIET KAMPANII</Text>
+          <Text style={styles.compactLabel}>{t('campaign.pack_label')}</Text>
           <Text style={[styles.compactName, { color }]}>{campaign.name}</Text>
         </View>
         <View style={styles.compactPriceBadge}>
           {savePercent > 0 && (
             <Text style={styles.compactSave}>-{savePercent}%</Text>
           )}
-          <Text style={[styles.compactPrice, { color }]}>{campaign.price} 🪙</Text>
+          <Text style={[styles.compactPrice, { color }]}>{campaign.price}</Text>
         </View>
       </View>
 
       {/* Treść */}
       <Text style={styles.compactDesc} numberOfLines={2}>
-        Odblokuj {campaign.battleIds.length} bitwy w jednym pakiecie i zaoszczędź.
+        {t('campaign.unlock_pack', { count: campaign.battleIds.length })}
       </Text>
 
       {/* Przycisk */}
@@ -192,8 +195,8 @@ function CompactCampaignBanner({ campaign, userCoins, onPurchase }: {
         />
         <Text style={[styles.compactBtnText, { color: canAfford ? '#000' : '#555' }]}>
           {canAfford
-            ? `Kup pakiet za ${campaign.price} 🪙`
-            : `Brakuje ${campaign.price - userCoins} 🪙`}
+            ? t('campaign.buy_pack', { price: campaign.price })
+            : t('campaign.missing_short', { amount: campaign.price - userCoins })}
         </Text>
       </TouchableOpacity>
     </View>

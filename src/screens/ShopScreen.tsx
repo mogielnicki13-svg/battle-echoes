@@ -272,7 +272,7 @@ export default function ShopScreen() {
     if (hasAllEras()) return; // już posiada
     if ((user?.coins ?? 0) < BUNDLE_PRICE) {
       triggerShake();
-      showToast('🪙', t('shop.not_enough_coins'),
+      showToast('coin', t('shop.not_enough_coins'),
         `${t('shop.need_coins', { amount: BUNDLE_PRICE })} — ${t('shop.go_to_coins')}`,
         '#f87171');
       return;
@@ -290,7 +290,7 @@ export default function ShopScreen() {
     if (offer.price === 0) return;
     if ((user?.coins ?? 0) < offer.price) {
       triggerShake();
-      showToast('🪙', t('shop.not_enough_coins'),
+      showToast('coin', t('shop.not_enough_coins'),
         `${t('shop.need_coins', { amount: offer.price })} — ${t('shop.go_to_coins')}`,
         '#f87171');
       return;
@@ -316,7 +316,7 @@ export default function ShopScreen() {
     if ((user?.unlockedArtifacts ?? []).includes(item.id)) return;
     if ((user?.coins ?? 0) < item.price) {
       triggerShake();
-      showToast('🪙', t('shop.not_enough_coins'),
+      showToast('coin', t('shop.not_enough_coins'),
         `${t('shop.need_coins', { amount: item.price })} — ${t('shop.go_to_coins_short')}`,
         '#f87171');
       return;
@@ -348,8 +348,8 @@ export default function ShopScreen() {
         const total = result.coins;
         awardCoins(total, `Zakup: ${pack.price}`);
         setBurstVisible(true);
-        showFloating(`+${total} 🪙`, Colors.gold);
-        showToast('🪙', `+${total} Dukatów`, `Zakup: ${pack.price}`, Colors.gold);
+        showFloating(`+${total}`, Colors.gold);
+        showToast('coin', `+${total}`, `${pack.price}`, Colors.gold);
       } catch (e: unknown) {
         showToast('❌', t('shop.purchase_error'), e instanceof Error ? e.message : t('common.retry'), '#f87171');
       }
@@ -357,9 +357,9 @@ export default function ShopScreen() {
       // Demo mode — IAP not available (Expo Go or not initialized)
       awardCoins(pack.coins + pack.bonus, 'Demo — zakup dukatów');
       setBurstVisible(true);
-      showFloating(`+${pack.coins + pack.bonus} 🪙`, Colors.gold);
-      showToast('🪙', `+${pack.coins + pack.bonus} Dukatów`,
-        `Zakup: ${pack.price} — tryb demo`, Colors.gold);
+      showFloating(`+${pack.coins + pack.bonus}`, Colors.gold);
+      showToast('coin', `+${pack.coins + pack.bonus}`,
+        `${pack.price}`, Colors.gold);
     }
   };
 

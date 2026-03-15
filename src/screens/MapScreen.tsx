@@ -273,11 +273,11 @@ export default function MapScreen({ navigation }: any) {
     const rid = Math.random().toString(36).substring(2, 8);
     setFloaters(prev => [...prev,
       { id: `${rid}_xp`,    value: `+${site.xpReward} XP`,  color: '#fbbf24' },
-      { id: `${rid}_coins`, value: `+${site.coinReward} 🪙`, color: Colors.gold },
+      { id: `${rid}_coins`, value: `+${site.coinReward}`, color: Colors.gold },
     ]);
     const artifactSuffix = site.artifactId ? ` · ${t('map.legendary_artifact')}!` : '';
     setToastData({ icon: '📍', title: t('map.unlocked_toast', { name: site.name }),
-      subtitle: `+${site.xpReward} XP · +${site.coinReward} 🪙${artifactSuffix}`, color: '#4ade80' });
+      subtitle: `+${site.xpReward} XP · +${site.coinReward}${artifactSuffix}`, color: '#4ade80' });
     setToastVisible(true);
     setTimeout(() => setToastVisible(false), 4000);
     setVisitModal(null);
@@ -548,7 +548,7 @@ export default function MapScreen({ navigation }: any) {
                         {visited ? ` · ${t('map.visited')} ✅` : ''}
                       </Text>
                       <Text style={styles.proxReward}>
-                        +{result.site.xpReward} XP · +{result.site.coinReward} 🪙 · {t('map.legendary_artifact')}
+                        +{result.site.xpReward} XP · +{result.site.coinReward} · {t('map.legendary_artifact')}
                       </Text>
                     </View>
                     {result.isInside && !visited && (
@@ -654,11 +654,11 @@ function LockedBattleSheet({ battle, userCoins, price, campaign, onClose, onUnlo
       <View style={styles.priceRow}>
         <View style={styles.priceBox}>
           <Text style={styles.priceLabel}>{t('map.unlock_cost')}</Text>
-          <Text style={styles.priceValue}>{price} 🪙</Text>
+          <Text style={styles.priceValue}>{price}</Text>
         </View>
         <View style={[styles.balanceBox, !canAfford && styles.balanceBoxLow]}>
           <Text style={styles.balanceLabel}>{t('map.your_coins')}</Text>
-          <Text style={[styles.balanceValue, !canAfford && { color: '#f87171' }]}>{userCoins} 🪙</Text>
+          <Text style={[styles.balanceValue, !canAfford && { color: '#f87171' }]}>{userCoins}</Text>
         </View>
       </View>
 

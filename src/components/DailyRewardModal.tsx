@@ -8,9 +8,11 @@ import {
   View, Text, StyleSheet, TouchableOpacity,
   Modal, Animated, Dimensions,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, Radius } from '../constants/theme';
 import { useAppStore } from '../store';
 import { hapticSuccess, hapticMedium, hapticLight } from '../services/HapticsService';
+import { DucatIcon } from './GoldIcon';
 
 const { height: SH } = Dimensions.get('window');
 const C = Colors;
@@ -26,13 +28,13 @@ interface DayReward {
 }
 
 const DAY_REWARDS: DayReward[] = [
-  { day: 1, icon: '🪙',  label: '20 Dukatów',   xp: 50,  coins: 20,  isSpecial: false },
-  { day: 2, icon: '⭐',  label: '+75 XP',         xp: 75,  coins: 0,   isSpecial: false },
-  { day: 3, icon: '🪙',  label: '50 Dukatów',   xp: 75,  coins: 50,  isSpecial: false },
-  { day: 4, icon: '🔥',  label: '+150 XP',        xp: 150, coins: 20,  isSpecial: false },
-  { day: 5, icon: '🪙',  label: '100 Dukatów',  xp: 100, coins: 100, isSpecial: false },
-  { day: 6, icon: '💎',  label: '+250 XP',        xp: 250, coins: 50,  isSpecial: false },
-  { day: 7, icon: '🏆',  label: '300 Dukatów\n+ 500 XP', xp: 500, coins: 300, isSpecial: true },
+  { day: 1, icon: 'coin', label: 'coins_20',   xp: 50,  coins: 20,  isSpecial: false },
+  { day: 2, icon: '⭐',  label: 'xp_75',       xp: 75,  coins: 0,   isSpecial: false },
+  { day: 3, icon: 'coin', label: 'coins_50',   xp: 75,  coins: 50,  isSpecial: false },
+  { day: 4, icon: '🔥',  label: 'xp_150',      xp: 150, coins: 20,  isSpecial: false },
+  { day: 5, icon: 'coin', label: 'coins_100',  xp: 100, coins: 100, isSpecial: false },
+  { day: 6, icon: '💎',  label: 'xp_250',      xp: 250, coins: 50,  isSpecial: false },
+  { day: 7, icon: '🏆',  label: 'weekly',      xp: 500, coins: 300, isSpecial: true },
 ];
 
 // ── Typy ──────────────────────────────────────────────────
@@ -49,6 +51,7 @@ interface Props {
 // KOMPONENT
 // ════════════════════════════════════════════════════════════
 export default function DailyRewardModal({ visible, onClose, streakDay, alreadyClaimed }: Props) {
+  const { t } = useTranslation();
   const { awardXP, awardCoins, checkDailyStreak } = useAppStore();
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -117,15 +120,15 @@ export default function DailyRewardModal({ visible, onClose, streakDay, alreadyC
     // Uruchom checkDailyStreak (które też przyznaje XP za serię)
     checkDailyStreak();
     // Przyznaj dodatkowe nagrody z harmonogramu
-    if (todayReward.xp   > 0) awardXP(todayReward.xp,     `Dzienna nagroda — Dzień ${todayReward.day}`);
-    if (todayReward.coins > 0) awardCoins(todayReward.coins, `Dzienna nagroda — Dzień ${todayReward.day}`);
+    if (todayReward.xp   > 0) awardXP(todayReward.xp,     t('daily_reward.daily_reason', { day: todayReward.day }));
+    if (todayReward.coins > 0) awardCoins(todayReward.coins, t('daily_reward.daily_reason', { day: todayReward.day }));
 
     burstParticles();
     setClaimed(true);
     setClaiming(false);
   };
 
-  const PARTICLE_ICONS = ['🪙', '⭐', '✨', '🔥', '💛', '⚡', '🏅', '💎'];
+  const PARTICLE_ICONS = ['✨', '⭐', '✨', '🔥', '💛', '⚡', '🏅', '💎'];
 
   return (
     <Modal
@@ -146,9 +149,9 @@ export default function DailyRewardModal({ visible, onClose, streakDay, alreadyC
         <View style={styles.handle} />
 
         {/* Tytuł */}
-        <Text style={styles.title}>🔥 Dzienna Nagroda</Text>
+        <Text style={styles.title}>🔥 {t('daily_reward.title')}</Text>
         <Text style={styles.subtitle}>
-          Seria: <Text style={styles.streakNum}>{Math.max(1, streakDay)} {streakDay === 1 ? 'dzień' : 'dni'}</Text>
+          {t('daily_reward.streak_label')} <Text style={styles.streakNum}>{streakDay === 1 ? t('daily_reward.day_one', { count: 1 }) : t('daily_reward.day_many', { count: Math.max(1, streakDay) })}</Text>
         </Text>
 
         {/* Kalendarz 7 dni */}
@@ -173,9 +176,15 @@ export default function DailyRewardModal({ visible, onClose, streakDay, alreadyC
                 {isPast && (
                   <Text style={styles.dayCellCheck}>✓</Text>
                 )}
-                <Text style={[styles.dayCellIcon, isFuture && { opacity: 0.35 }]}>
-                  {reward.icon}
-                </Text>
+                {reward.icon === 'coin' ? (
+                  <View style={[isFuture && { opacity: 0.35 }]}>
+                    <DucatIcon size={18} />
+                  </View>
+                ) : (
+                  <Text style={[styles.dayCellIcon, isFuture && { opacity: 0.35 }]}>
+                    {reward.icon}
+                  </Text>
+                )}
                 <Text style={[styles.dayCellNum, isFuture && { color: C.textMuted }]}>
                   {dayNum === 7 ? '7🔥' : `${dayNum}`}
                 </Text>
@@ -208,20 +217,32 @@ export default function DailyRewardModal({ visible, onClose, streakDay, alreadyC
             ))}
           </View>
 
-          <Text style={styles.todayBoxDay}>DZIŚ — DZIEŃ {todayIndex + 1}</Text>
-          <Text style={styles.todayBoxIcon}>{todayReward.icon}</Text>
-          <Text style={styles.todayBoxLabel}>{todayReward.label}</Text>
+          <Text style={styles.todayBoxDay}>{t('daily_reward.today_label', { day: todayIndex + 1 })}</Text>
+          {todayReward.icon === 'coin' ? (
+            <View style={{ paddingVertical: 8 }}>
+              <DucatIcon size={48} />
+            </View>
+          ) : (
+            <Text style={styles.todayBoxIcon}>{todayReward.icon}</Text>
+          )}
+          <Text style={styles.todayBoxLabel}>
+            {todayReward.coins > 0 && todayReward.xp > 0
+              ? t('daily_reward.coins_and_xp_label', { coins: todayReward.coins, xp: todayReward.xp })
+              : todayReward.coins > 0
+                ? t('daily_reward.coins_label', { amount: todayReward.coins })
+                : `+${todayReward.xp} XP`}
+          </Text>
           {(todayReward.xp > 0 || todayReward.coins > 0) && (
             <Text style={styles.todayBoxDetail}>
               {[
                 todayReward.xp    > 0 && `+${todayReward.xp} XP`,
-                todayReward.coins > 0 && `+${todayReward.coins} 🪙`,
+                todayReward.coins > 0 && `+${todayReward.coins}`,
               ].filter(Boolean).join('  ·  ')}
             </Text>
           )}
           {todayReward.isSpecial && (
             <View style={styles.specialBadge}>
-              <Text style={styles.specialBadgeText}>🏆 NAGRODA TYGODNIOWA</Text>
+              <Text style={styles.specialBadgeText}>🏆 {t('daily_reward.weekly_badge')}</Text>
             </View>
           )}
         </View>
@@ -229,7 +250,7 @@ export default function DailyRewardModal({ visible, onClose, streakDay, alreadyC
         {/* CTA */}
         {claimed ? (
           <View style={styles.claimedBadge}>
-            <Text style={styles.claimedBadgeText}>✅ Nagroda odebrana — wróć jutro!</Text>
+            <Text style={styles.claimedBadgeText}>✅ {t('daily_reward.claimed')}</Text>
           </View>
         ) : (
           <TouchableOpacity
@@ -239,13 +260,13 @@ export default function DailyRewardModal({ visible, onClose, streakDay, alreadyC
             disabled={claiming}
           >
             <Text style={styles.claimBtnText}>
-              🎁 Odbierz dzisiejszą nagrodę
+              🎁 {t('daily_reward.claim_btn')}
             </Text>
           </TouchableOpacity>
         )}
 
         <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-          <Text style={styles.closeBtnText}>Zamknij</Text>
+          <Text style={styles.closeBtnText}>{t('common.close')}</Text>
         </TouchableOpacity>
 
         <View style={{ height: 16 }} />

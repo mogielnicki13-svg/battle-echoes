@@ -67,8 +67,8 @@ export default function ProfileScreen({ navigation }: any) {
 
   const handleEarnCoins = () => {
     awardCoins(50, 'Demo');
-    showFloating('+50 🪙', Colors.gold);
-    showToast('🪙', '+50 Dukatów', 'Nagroda za aktywność', Colors.gold);
+    showFloating('+50', Colors.gold);
+    showToast('coin', '+50', 'Demo reward', Colors.gold);
   };
 
   const handleStreak = () => {

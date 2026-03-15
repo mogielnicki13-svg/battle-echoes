@@ -145,13 +145,13 @@ export default function GPSScreen({ navigation }: any) {
     const rewardId = Math.random().toString(36).substring(2, 8);
     setFloaters(prev => [...prev,
       { id: `${rewardId}_xp`,    value: `+${site.xpReward} XP`,    color: '#fbbf24' },
-      { id: `${rewardId}_coins`, value: `+${site.coinReward} 🪙`,  color: Colors.gold },
+      { id: `${rewardId}_coins`, value: `+${site.coinReward}`,  color: Colors.gold },
     ]);
 
     setToastData({
       icon:     '📍',
       title:    t('gps.unlocked_toast', { name: site.name }),
-      subtitle: `+${site.xpReward} XP · +${site.coinReward} 🪙 · ${t('gps.legendary_artifact')}!`,
+      subtitle: `+${site.xpReward} XP · +${site.coinReward} · ${t('gps.legendary_artifact')}!`,
       color:    '#4ade80',
     });
     setToastVisible(true);
@@ -433,7 +433,7 @@ function ProximityCard({ result, visited, onPress }: {
             {visited && <Text style={styles.proxVisited}>· {t('gps.visited')} ✅</Text>}
           </View>
           <Text style={styles.proxReward}>
-            +{site.xpReward} XP · +{site.coinReward} 🪙 · {t('gps.legendary_artifact')}
+            +{site.xpReward} XP · +{site.coinReward} · {t('gps.legendary_artifact')}
           </Text>
         </View>
 
